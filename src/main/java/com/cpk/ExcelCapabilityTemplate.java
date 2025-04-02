@@ -94,8 +94,9 @@ public class ExcelCapabilityTemplate {
         for (int i = 0; i < values.length; i++) {
             Row row = sheet.getRow(baseRow + i);
             if (row == null) row = sheet.createRow(baseRow + i);
-            Cell cell = row.getCell(col);
-            if (cell == null) cell = row.createCell(col);
+            Cell cell = row.getCell(col + 1);
+                if (cell == null) cell = row.createCell(col + 1);
+
             cell.setCellValue(values[i]);
         }
     }

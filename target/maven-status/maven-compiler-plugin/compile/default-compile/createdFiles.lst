@@ -1,8 +1,3 @@
-com\server\WLInner.class
-com\server\RUInner.class
-com\server\JLInner.class
-com\server\Main.class
-com\server\CPK.class
-com\server\Honda.class
-com\server\JLOuter.class
-com\server\BT1YL.class
+com\cpk\CapabilityCalculatorUI.class
+com\cpk\ExcelCapabilityTemplate.class
+com\cpk\CapabilityCalculator.class

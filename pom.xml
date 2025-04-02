@@ -23,8 +23,8 @@
   </parent>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>17</java.version>
+  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  <java.version>21</java.version> <!-- Updated from 17 to 21 -->
   </properties>
 
   <!-- Dependencies -->
