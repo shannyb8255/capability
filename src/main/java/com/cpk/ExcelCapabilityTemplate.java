@@ -22,9 +22,24 @@ public class ExcelCapabilityTemplate {
                 String targetSheet = sheet.getSheetName().contains("FD") ? "Capability (FD)" : "Capability (RD)";
                 int rowCount = sheet.getSheetName().contains("RH") ? 13 : 3;
 
+                Sheet outputSheet = workbook.getSheet(targetSheet);
+                if (outputSheet == null) {
+                    System.out.println("Missing target sheet: " + targetSheet);
+                    continue;
+                }
+
                 for (int c = 1; c < colCount; c++) {
-                    String toleranceInput = sheet.getRow(3).getCell(c).getStringCellValue().trim();
-                    double tolerance = Double.parseDouble(toleranceInput.split(" ")[1]);
+                    Cell toleranceCell = sheet.getRow(3).getCell(c);
+                    if (toleranceCell == null) continue;
+
+                    double tolerance;
+                    if (toleranceCell.getCellType() == CellType.NUMERIC) {
+                        tolerance = toleranceCell.getNumericCellValue();
+                    } else {
+                        String toleranceInput = toleranceCell.getStringCellValue().trim();
+                        String[] parts = toleranceInput.split(" ");
+                        tolerance = Double.parseDouble(parts[parts.length - 1]);
+                    }
 
                     List<Double> data = new ArrayList<>();
                     for (int i = 4; i < 4 + entryCount; i++) {
@@ -33,6 +48,8 @@ public class ExcelCapabilityTemplate {
                             data.add(cell.getNumericCellValue());
                         }
                     }
+
+                    if (data.isEmpty()) continue;
 
                     double mean = CapabilityCalculator.calculateMean(data);
                     double cpStd = CapabilityCalculator.calculateCPStandardDeviation(data, mean);
@@ -48,7 +65,7 @@ public class ExcelCapabilityTemplate {
                     double min = CapabilityCalculator.calculateMin(data);
                     double max = CapabilityCalculator.calculateMax(data);
 
-                    writeToSheet(workbook.getSheet(targetSheet), rowCount, c, mean, cp, cpk, pp, ppk, min, max);
+                    writeToSheet(outputSheet, rowCount, c, mean, cp, cpk, pp, ppk, min, max);
                 }
             }
 
@@ -66,7 +83,7 @@ public class ExcelCapabilityTemplate {
         Row row = sheet.getRow(3); // Row 4 (0-indexed)
         int count = 0;
         for (Cell cell : row) {
-            if (cell.getCellType() == CellType.STRING && cell.getStringCellValue().contains("±")) {
+            if (cell != null && (cell.getCellType() == CellType.STRING || cell.getCellType() == CellType.NUMERIC)) {
                 count++;
             }
         }
@@ -95,8 +112,7 @@ public class ExcelCapabilityTemplate {
             Row row = sheet.getRow(baseRow + i);
             if (row == null) row = sheet.createRow(baseRow + i);
             Cell cell = row.getCell(col + 1);
-                if (cell == null) cell = row.createCell(col + 1);
-
+            if (cell == null) cell = row.createCell(col + 1);
             cell.setCellValue(values[i]);
         }
     }
